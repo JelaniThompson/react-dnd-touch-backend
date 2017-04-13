@@ -3,9 +3,9 @@
  * Copyrights licensed under the MIT License. See the accompanying LICENSE file for terms.
  */
 import gulp from 'gulp';
+import connect from 'gulp-connect';
 import del from 'del';
 import babel from 'gulp-babel';
-
 import { default as js, dist } from './tasks/browserify';
 
 gulp.task('clean', () => {
@@ -19,6 +19,7 @@ gulp.task('js-dev', js({
     destFilename: 'main.browserified.js',
     destFolder: './examples/'
 }));
+
 gulp.task('js-dev-drop', js({
     src: './examples/dropTarget/js/index.jsx',
     destFilename: 'main.browserified.js',
@@ -38,7 +39,14 @@ gulp.task('babel', () => {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('dev', ['clean', 'js-dev', 'js-dev-drop']);
-gulp.task('dist', ['clean', 'babel', 'js-browserify']);
+gulp.task('connect', () => {
+    connect.server({
+        name: 'Example App',
+        port: 7789,
+        root: ['examples']
+    });
+});
 
+gulp.task('dev', ['clean', 'js-dev', 'js-dev-drop', 'connect']);
+gulp.task('dist', ['clean', 'babel', 'js-browserify']);
 gulp.task('default', ['dev']);
